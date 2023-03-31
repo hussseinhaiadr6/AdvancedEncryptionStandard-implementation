@@ -1,3 +1,3 @@
 # AdvancedEncryptionStandard-implementation
 AES implementation in C++
- ## This is repository thatshows hot to implement AES in C++
+ ## This is repository that shows how to implement AES in C++
