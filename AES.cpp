@@ -86,24 +86,9 @@ int main()
     AES_Encrypt(state, key);
 
     cout << "Encryption Output is: " << endl;
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            cout << std::setfill('0') << std::setw(sizeof(uint8_t) * 2) << hex << (int)state[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
+    print(state);
     AES_Decrypt(state, key);
 
     cout << "Decryption Output is: " << endl;
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            cout << std::setfill('0') << std::setw(sizeof(uint8_t) * 2) << hex << (int)state[i][j] << " ";
-        }
-        cout << endl;
-    }
+    print(state);
 }
