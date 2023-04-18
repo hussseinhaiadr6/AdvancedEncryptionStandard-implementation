@@ -1,16 +1,13 @@
-/* encrypt.cpp
- * Performs encryption using AES 128-bit
- * @author Cecelia Wisniewska
- */
 #include "stdint.h"
 #include <iostream>
 #include <cstring>
 #include <fstream>
 #include <sstream>
-
+#include <array>
+#include <iomanip>
 using namespace std;
 
-unsigned char rcon[256] = {
+uint8_t rcon[256] = {
 	0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a,
 	0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39,
 	0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a,
@@ -28,7 +25,7 @@ unsigned char rcon[256] = {
 	0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd,
 	0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d};
 
-unsigned char s[256] =
+uint8_t s[256] =
 	{
 		0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
 		0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
@@ -47,10 +44,10 @@ unsigned char s[256] =
 		0xE1, 0xF8, 0x98, 0x11, 0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF,
 		0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16};
 
-void KeyExpansionCore(unsigned char *in, unsigned char i)
+void KeyExpansionCore(uint8_t *in, uint8_t i)
 {
 	// Rotate left by one byte: shift left
-	unsigned char t = in[0];
+	uint8_t t = in[0];
 	in[0] = in[1];
 	in[1] = in[2];
 	in[2] = in[3];
@@ -71,17 +68,18 @@ void KeyExpansionCore(unsigned char *in, unsigned char i)
  * Total of 11 128-bit keys generated, including the original
  * Keys are stored one after the other in expandedKeys
  */
-void KeyExpansion(unsigned char inputKey[16], unsigned char expandedKeys[176])
+void KeyExpansion(array<uint8_t,16> &inputKey, array<array<uint8_t, 16>,11> &expandedKeys)
 {
+	uint8_t expandedKeysArr[176]; //creating a 1 dimensional array for the expanded keys
 	// The first 128 bits are the original key
 	for (int i = 0; i < 16; i++)
 	{
-		expandedKeys[i] = inputKey[i];
+		expandedKeysArr[i] = inputKey[i];
 	}
 
-	int bytesGenerated = 16;  // Bytes we've generated so far
-	int rconIteration = 1;	  // Keeps track of rcon value
-	unsigned char tmpCore[4]; // Temp storage for core
+	int bytesGenerated = 16; // Bytes we've generated so far
+	int rconIteration = 1;	 // Keeps track of rcon value
+	uint8_t tmpCore[4];		 // Temp storage for core
 
 	while (bytesGenerated < 176)
 	{
@@ -91,7 +89,7 @@ void KeyExpansion(unsigned char inputKey[16], unsigned char expandedKeys[176])
 		 */
 		for (int i = 0; i < 4; i++)
 		{
-			tmpCore[i] = expandedKeys[i + bytesGenerated - 4];
+			tmpCore[i] = expandedKeysArr[i + bytesGenerated - 4];
 		}
 
 		// Perform the core once for each 16 byte key
@@ -100,33 +98,23 @@ void KeyExpansion(unsigned char inputKey[16], unsigned char expandedKeys[176])
 			KeyExpansionCore(tmpCore, rconIteration++);
 		}
 
-		for (unsigned char a = 0; a < 4; a++)
+		for (uint8_t a = 0; a < 4; a++)
 		{
-			expandedKeys[bytesGenerated] = expandedKeys[bytesGenerated - 16] ^ tmpCore[a];
+			expandedKeysArr[bytesGenerated] = expandedKeysArr[bytesGenerated - 16] ^ tmpCore[a];
 			bytesGenerated++;
 		}
 	}
+
+	for(int i=0; i< 11; i++){
+		for( int j =0; j<16;j++){
+		 expandedKeys[i][j] = expandedKeysArr[16*i + j];
+		}
+	}
+
 }
 
 int main()
 {
-	unsigned char *state = new unsigned char[16];
-	state[0] = (char)14;
-	state[1] = (char)206;
-	state[2] = (char)242;
-	state[3] = (char)217;
-	state[4] = (char)54;
-	state[5] = (char)114;
-	state[6] = (char)107;
-	state[7] = (char)43;
-	state[8] = (char)52;
-	state[9] = (char)37;
-	state[10] = (char)23;
-	state[11] = (char)85;
-	state[12] = (char)174;
-	state[13] = (char)182;
-	state[14] = (char)78;
-	state[15] = (char)136;
 
 	string str;
 	ifstream infile;
@@ -139,50 +127,34 @@ int main()
 	}
 
 	else
+	{
 		cout << "Unable to open file";
-	cout << str << "the string is "
-		 << "\n";
+	}
+	
+	cout << "the string is "<< str<< "\n";
 
 	istringstream hex_chars_stream(str);
-	unsigned char key[16];
+	array<uint8_t,16> key;
 	int i = 0;
 	unsigned int c;
-
+	
 	// we are taking a hex key for the keyfile and turn it into their ascii int value
 	while (hex_chars_stream >> hex >> c)
 	{
-		key[i] = c;
-		// cout<<key[i]<<"hu"<<"\n";
+		key[i] = (uint8_t)c;
 		i++;
 	}
 
-	unsigned char expandedKey[176];
+	array<array<uint8_t,16>,11> expandedKey;
 
 	KeyExpansion(key, expandedKey);
-	for (int i = 0; i < 176; i++)
-	{
-		// cout<<dec<<"Byte: "<<(int)i<<"  d";
-		if ((int)expandedKey[i] > 15)
-		{
-			if ((i + 1) % 4 == 0)
-			{
-				cout << hex << (int)expandedKey[i] << endl;
-			}
-			else
-			{
-				cout << hex << (int)expandedKey[i] << " ";
-			}
+	
+	for (int i =0;i<11;i++){
+		cout<< "Key number "<< i+1<<": ";
+		for (int j =0;j<16;j++){
+			cout <<std::setfill('0') << std::setw(sizeof(uint8_t)*2)<< hex << (int)expandedKey[i][j] << " ";
 		}
-		else
-		{
-			if ((i + 1) % 4 == 0)
-			{
-				cout << "0" << hex << (int)expandedKey[i] << endl;
-			}
-			else
-			{
-				cout << "0" << hex << (int)expandedKey[i] << " ";
-			}
-		}
+		cout<<endl;
 	}
+
 }

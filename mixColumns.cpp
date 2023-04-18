@@ -154,7 +154,7 @@ void mixSingleColumn2(uint8_t *r)
     r[3] = a[3];
 }
 
-void mixColumns(array<array<uint8_t, 4>, 4> state)
+void mixColumns(array<array<uint8_t, 4>, 4> &state)
 {
     uint8_t *temp = new uint8_t[4];
 
@@ -191,7 +191,7 @@ void inverseMixSingleColumn(uint8_t *r)
     r[3] = a[3];
 }
 
-void inverseMixColumns(array<array<uint8_t, 4>, 4> state)
+void inverseMixColumns(array<array<uint8_t, 4>, 4> &state)
 {
     uint8_t *temp = new uint8_t[4];
 
