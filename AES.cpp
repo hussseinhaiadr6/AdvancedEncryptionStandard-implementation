@@ -6,21 +6,10 @@
 // typedef unsigned char uint8_t;
 using namespace std;
 
-void print(array<array<uint8_t, 4>, 4> &state)
+string AES_Encrypt(string text, string keyStr)
 {
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            cout << std::setfill('0') << std::setw(sizeof(uint8_t) * 2) << hex << (int)state[i][j] << " ";
-        }
-        cout << endl;
-    }
-}
-
-array<array<uint8_t, 4>, 4> AES_Encrypt(array<array<uint8_t, 4>, 4> &state, array<uint8_t, 16> &key)
-{
-
+    array<array<uint8_t, 4>, 4> state = convertStringTo2DStateArray(text);
+    array<uint8_t, 16> key = convertStringTo1DStateArray(keyStr);
     array<array<uint8_t, 16>, 11> expandedKey;
 
     KeyExpansion(key, expandedKey);
@@ -43,12 +32,13 @@ array<array<uint8_t, 4>, 4> AES_Encrypt(array<array<uint8_t, 4>, 4> &state, arra
 
     add_round_key(state, expandedKey[10]);
 
-    return state;
+    return convert2DStateArrayToString(state);
 }
 
-array<array<uint8_t, 4>, 4> AES_Decrypt(array<array<uint8_t, 4>, 4> &cipher, array<uint8_t, 16> &key)
+string AES_Decrypt(string cipherText, string keyStr)
 {
-
+    array<array<uint8_t, 4>, 4> cipher = convertStringTo2DStateArray(cipherText);
+    array<uint8_t, 16> key = convertStringTo1DStateArray(keyStr);
     array<array<uint8_t, 16>, 11> expandedKey;
 
     KeyExpansion(key, expandedKey);
@@ -70,25 +60,19 @@ array<array<uint8_t, 4>, 4> AES_Decrypt(array<array<uint8_t, 4>, 4> &cipher, arr
 
     add_round_key(cipher, expandedKey[0]);
 
-    return cipher;
+    return convert2DStateArrayToString(cipher);
 }
 
 int main()
 {
 
-    array<array<uint8_t, 4>, 4> state{0x32, 0x88, 0x31, 0xe0,
-                                      0x43, 0x5a, 0x31, 0x37,
-                                      0xf6, 0x30, 0x98, 0x07,
-                                      0xa8, 0x8d, 0xa2, 0x34};
-
-    array<uint8_t, 16> key = {0x2b, 0x7E, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
-
-    AES_Encrypt(state, key);
+    string cipher = AES_Encrypt("00000000000000000000000000000000", "10a58869d74be5a374cf867cfb473859");
 
     cout << "Encryption Output is: " << endl;
-    print(state);
-    AES_Decrypt(state, key);
+    cout << cipher<<endl;
+    string plainText =  AES_Decrypt(cipher, "10a58869d74be5a374cf867cfb473859");
+    
 
     cout << "Decryption Output is: " << endl;
-    print(state);
+    cout << plainText;
 }
