@@ -77,6 +77,7 @@ array<uint8_t, 16> convertStringTo1DStateArray(string s)
     }
     return state;
 }
+
 string convert1DStateArrayToString(array<uint8_t, 16> &state)
 {
     std::stringstream stream;

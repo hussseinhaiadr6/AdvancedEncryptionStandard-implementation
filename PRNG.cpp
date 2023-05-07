@@ -34,15 +34,4 @@ int main(){
     string key;
     key =RandomKeyGenrator(16);
     cout<<key;
-    
-    
 }
-
-
-
-
-
-
-
-
-
