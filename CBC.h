@@ -1,7 +1,6 @@
 #include "AesEnc.h"
 #include <vector>
 #include <bitset>
-#include "PRNG.h"
 using namespace std;
 
 /*  Conversion functions   */
@@ -71,9 +70,14 @@ vector<string> convertHexStringToCharArray(string str)
 
 /*  IV functions   */
 
-string initializationVector()
+int increment_function(string nonce)
 {
-    return RandomKeyGenrator(16);
+    return -1;
+}
+
+string initializationVector(string nonce, string key)
+{
+    return AES_Encrypt(nonce, key);
 }
 
 /*   Xoring Strings Functions  */
@@ -183,7 +187,7 @@ string CBC_encrypt(string input, string key)
     vector<string> inputVector = adjustCBCInput(input);
     vector<string> cipherTextVect;
     string cipherText;
-    string IV = initializationVector();
+    string IV = "000102030405060708090a0b0c0d0e0f";
     cipherTextVect.push_back(IV);
     for (int i = 0; i < inputVector.size(); i++)
     {
@@ -218,19 +222,4 @@ string CBC_decrypt(string cipher, string key)
     }
     plainText = RemovePadding(plainText);
     return plainText;
-}
-
-
-
-int main()
-{
-    string originalText = "6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710";
-    string cipherText = CBC_encrypt(originalText, "2b7e151628aed2a6abf7158809cf4f3c");
-    cout<<cipherText<<endl;
-    string plainText = CBC_decrypt(cipherText, "2b7e151628aed2a6abf7158809cf4f3c");
-    cout<<plainText<<endl;
-    bool test = originalText == plainText;
-    cout << test << endl;
-
-
 }
