@@ -18,10 +18,12 @@ string hexToASCII(string hex)
     return ascii;
 }
 
-string stringToHex(const string& input) {
+string stringToHex(const string &input)
+{
     stringstream ss;
     ss << hex << setfill('0');
-    for (const unsigned char c : input) {
+    for (const unsigned char c : input)
+    {
         ss << setw(2) << static_cast<int>(c);
     }
     return ss.str();
@@ -220,17 +222,11 @@ string CBC_decrypt(string cipher, string key)
     return plainText;
 }
 
-
-
 int main()
 {
     string originalText = "6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710";
     string cipherText = CBC_encrypt(originalText, "2b7e151628aed2a6abf7158809cf4f3c");
-    cout<<cipherText<<endl;
     string plainText = CBC_decrypt(cipherText, "2b7e151628aed2a6abf7158809cf4f3c");
-    cout<<plainText<<endl;
     bool test = originalText == plainText;
     cout << test << endl;
-
-
 }

@@ -1,6 +1,7 @@
 #include "AesEnc.h"
 #include <vector>
 #include <bitset>
+#include "PRNG.h"
 using namespace std;
 
 /*  Conversion functions   */
@@ -17,10 +18,12 @@ string hexToASCII(string hex)
     return ascii;
 }
 
-string stringToHex(const string& input) {
+string stringToHex(const string &input)
+{
     stringstream ss;
     ss << hex << setfill('0');
-    for (const unsigned char c : input) {
+    for (const unsigned char c : input)
+    {
         ss << setw(2) << static_cast<int>(c);
     }
     return ss.str();
@@ -70,14 +73,9 @@ vector<string> convertHexStringToCharArray(string str)
 
 /*  IV functions   */
 
-int increment_function(string nonce)
+string initializationVector()
 {
-    return -1;
-}
-
-string initializationVector(string nonce, string key)
-{
-    return AES_Encrypt(nonce, key);
+    return RandomKeyGenrator(16);
 }
 
 /*   Xoring Strings Functions  */
@@ -187,7 +185,7 @@ string CBC_encrypt(string input, string key)
     vector<string> inputVector = adjustCBCInput(input);
     vector<string> cipherTextVect;
     string cipherText;
-    string IV = "000102030405060708090a0b0c0d0e0f";
+    string IV = initializationVector();
     cipherTextVect.push_back(IV);
     for (int i = 0; i < inputVector.size(); i++)
     {

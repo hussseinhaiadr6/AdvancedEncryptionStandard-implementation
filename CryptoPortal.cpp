@@ -1,6 +1,7 @@
 #include <iostream>
 #include "CBC.h"
-#include "PRNG.h"
+
+using namespace std;
 
 class CryptoPortal
 {
@@ -36,7 +37,23 @@ public:
     }
 
     string generate_key(){
-        key = RandomKeyGenrator();
+        key = RandomKeyGenrator(16);
         return key;
     }
 };
+
+
+int main(){
+
+    CryptoPortal test;
+    
+    string keyVal = test.generate_key();
+    cout<<"New key created."<<"Key Value is : "<< keyVal<<endl;
+    string plainText = "Doctor Rida Bazzi is the best!!!!";
+    cout<<"Trying to encrypt: "<<plainText<<endl;
+    string cipherText = test.encrypt_CBC(plainText,true);
+    cout<<"The cipher text is: "<<cipherText<<endl;
+    string retrievedText = test.decrypt_CBC(cipherText,true);
+    cout<<"The decrypted text is: "<<retrievedText<<endl;
+
+}
