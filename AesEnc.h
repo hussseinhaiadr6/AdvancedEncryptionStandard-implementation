@@ -303,12 +303,14 @@ uint8_t lookuptable14[256] = {0x00, 0x0e, 0x1c, 0x12, 0x38, 0x36, 0x24, 0x2a, 0x
                               0x37, 0x39, 0x2b, 0x25, 0x0f, 0x01, 0x13, 0x1d, 0x47, 0x49, 0x5b, 0x55, 0x7f, 0x71, 0x63, 0x6d,
                               0xd7, 0xd9, 0xcb, 0xc5, 0xef, 0xe1, 0xf3, 0xfd, 0xa7, 0xa9, 0xbb, 0xb5, 0x9f, 0x91, 0x83, 0x8d};
 
-// Helper function for the mix columns step
-// this function is an optimized version of the mixSingleColumn that uses the dummy Rijndael's Galois field multiplication
+/* Helper function for the mix columns step
+ this function is an optimized version of the mixSingleColumn that uses the dummy Rijndael's Galois field multiplication
+ */
 void mixSingleColumn(uint8_t *column)
 {
-    // array ''a' will be used as a copy of the input array
-    //  array 'b'  is each element of the array 'a' multiplied by 2 in Rijndael's Galois field
+    /* array ''a' will be used as a copy of the input array
+      array 'b'  is each element of the array 'a' multiplied by 2 in Rijndael's Galois field
+      */
     uint8_t a[4];
     uint8_t b[4];
     uint8_t h;
@@ -503,9 +505,7 @@ void KeyExpansion(array<uint8_t, 16> &inputKey, array<array<uint8_t, 16>, 11> &e
     }
 }
 
-
 /*   AES Encryption Decryption  */
-
 
 string AES_Encrypt(string text, string keyStr)
 {
